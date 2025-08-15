@@ -1,5 +1,6 @@
 package br.com.starwarsms.domain;
 
+import br.com.starwarsms.jacoco.ExcludeFromJacocoGeneratedReport;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -61,6 +62,7 @@ public class Planet {
         return EqualsBuilder.reflectionEquals(this, o);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);

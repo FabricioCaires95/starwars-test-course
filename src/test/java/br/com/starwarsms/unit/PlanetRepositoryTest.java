@@ -6,11 +6,16 @@ import br.com.starwarsms.domain.QueryBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Example;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.stream.Stream;
 
 import static br.com.starwarsms.common.PlanetConstants.PLANET_1;
 import static br.com.starwarsms.common.PlanetConstants.PLANET_2;
@@ -57,13 +62,22 @@ public class PlanetRepositoryTest {
         assertEquals(sut.getTerrain(), planet.getTerrain());
     }
 
-    @Test
-    public void createPlanet_WithInvalidData_ThrowsException() {
-        var emptyPlanet = new Planet();
-        var invalidPlanet = new Planet(null, "", "", "");
-
-        assertThrows(RuntimeException.class, () -> planetRepository.save(emptyPlanet));
+    @ParameterizedTest
+    @MethodSource("provideInvalidPlanetData")
+    public void createPlanet_WithInvalidData_ThrowsException(Planet invalidPlanet) {
         assertThrows(RuntimeException.class, () -> planetRepository.save(invalidPlanet));
+    }
+
+
+    private static Stream<Arguments> provideInvalidPlanetData() {
+        return Stream.of(
+                Arguments.of(new Planet(null, null, null, null)),
+                Arguments.of(new Planet(null, "", "", "")),
+                Arguments.of(new Planet(null, "", "arid", "tundra")),
+                Arguments.of(new Planet(null, "Hoth", "", "")),
+                Arguments.of(new Planet(null, "Hoth", "", "tundra")),
+                Arguments.of(new Planet(null, "Hoth", "arid", ""))
+        );
     }
 
     @Test
